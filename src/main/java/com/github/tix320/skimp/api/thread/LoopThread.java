@@ -23,8 +23,9 @@ public final class LoopThread {
 
 	public void start() {
 		threadSubmitter.submit(() -> {
-			thread.set(Thread.currentThread());
-			while (!Thread.currentThread().isInterrupted()) {
+			Thread thread = Thread.currentThread();
+			this.thread.set(thread);
+			while (!thread.isInterrupted()) {
 				try {
 					loopAction.run();
 				}

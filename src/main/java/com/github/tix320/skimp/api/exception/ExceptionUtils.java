@@ -18,7 +18,7 @@ public class ExceptionUtils {
 		}
 	}
 
-	public static void appendAsyncStacktrace(StackTraceElement[] asyncRunnerStackTrace, Throwable throwable) {
+	public static void appendStacktraceToThrowable(Throwable throwable, StackTraceElement[] asyncRunnerStackTrace) {
 		StackTraceElement[] realStacktrace = throwable.getStackTrace();
 
 		StackTraceElement[] newStacktrace = new StackTraceElement[asyncRunnerStackTrace.length + realStacktrace.length];
