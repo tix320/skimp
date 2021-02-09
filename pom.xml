@@ -10,7 +10,7 @@
 
 	<groupId>com.github.tix320</groupId>
 	<artifactId>skimp</artifactId>
-	<version>0.1.2-SNAPSHOT</version>
+	<version>0.2.0</version>
 	<packaging>jar</packaging>
 
 	<name>Skimp</name>
