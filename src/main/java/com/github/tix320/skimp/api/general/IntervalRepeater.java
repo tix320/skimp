@@ -34,14 +34,15 @@ public final class IntervalRepeater<T> {
 	}
 
 	public Optional<T> doUntilSuccess(int maxCount) throws InterruptedException {
-		while (maxCount != 0) {
+		int remaining = maxCount;
+		while (remaining != 0) {
 			try {
 				return Optional.ofNullable(doNext());
 			} catch (InterruptedException e) {
 				throw e;
 			} catch (Throwable e) {
 				ExceptionUtils.applyToUncaughtExceptionHandler(e);
-				maxCount--;
+				remaining--;
 			}
 		}
 
