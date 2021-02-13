@@ -9,7 +9,7 @@ import java.util.function.Supplier;
 import com.github.tix320.skimp.api.exception.ExceptionUtils;
 import com.github.tix320.skimp.api.object.None;
 
-public class IntervalRepeater<T> {
+public final class IntervalRepeater<T> {
 
 	private final Supplier<T> action;
 
@@ -17,7 +17,7 @@ public class IntervalRepeater<T> {
 
 	private final Duration initialDuration;
 
-	private volatile Duration currentDuration;
+	private Duration currentDuration;
 
 	public IntervalRepeater(Supplier<T> action, Duration initialDuration, Function<Duration, Duration> accumulator) {
 		this.action = action;
