@@ -9,7 +9,7 @@ import java.util.function.Supplier;
 import com.github.tix320.skimp.api.exception.ExceptionUtils;
 import com.github.tix320.skimp.api.object.None;
 
-public final class IntervalRepeater<T> {
+public class IntervalRepeater<T> {
 
 	private final Supplier<T> action;
 
@@ -17,7 +17,7 @@ public final class IntervalRepeater<T> {
 
 	private final Duration initialDuration;
 
-	private Duration currentDuration;
+	private volatile Duration currentDuration;
 
 	public IntervalRepeater(Supplier<T> action, Duration initialDuration, Function<Duration, Duration> accumulator) {
 		this.action = action;
@@ -34,15 +34,14 @@ public final class IntervalRepeater<T> {
 	}
 
 	public Optional<T> doUntilSuccess(int maxCount) throws InterruptedException {
-		int remaining = maxCount;
-		while (remaining != 0) {
+		while (maxCount != 0) {
 			try {
 				return Optional.ofNullable(doNext());
 			} catch (InterruptedException e) {
 				throw e;
 			} catch (Throwable e) {
 				ExceptionUtils.applyToUncaughtExceptionHandler(e);
-				remaining--;
+				maxCount--;
 			}
 		}
 
