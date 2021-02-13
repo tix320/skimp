@@ -14,10 +14,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * @author Tigran Sargsyan on 23-Feb-19
  */
-class IDGeneratorTest {
+public class IDGeneratorTest {
 
 	@Test
-	void simpleTest() {
+	public void simpleTest() {
 		IDGenerator generator = new IDGenerator();
 
 		assertEquals(Long.MIN_VALUE, generator.next());
@@ -27,7 +27,7 @@ class IDGeneratorTest {
 	}
 
 	@Test
-	void concurrentTest() {
+	public void concurrentTest() {
 		IDGenerator generator = new IDGenerator();
 
 		int count = 500000;
