@@ -30,7 +30,7 @@ public final class IntervalRepeater<T> {
 		}
 		try {
 			return action.get();
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			throw new ActionFailedException(e);
 		}
 	}
