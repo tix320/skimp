@@ -28,4 +28,9 @@ public class ExceptionUtils {
 
 		throwable.setStackTrace(newStacktrace);
 	}
+
+	@SuppressWarnings("unchecked")
+	public static <T extends Throwable> void sneakyThrow(Throwable e) throws T {
+		throw (T) e;
+	}
 }
