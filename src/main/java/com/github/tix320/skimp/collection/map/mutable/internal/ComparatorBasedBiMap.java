@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import com.github.tix320.skimp.collection.map.BiMap;
 import com.github.tix320.skimp.collection.map.internal.AbstractBiMap;
@@ -16,18 +17,20 @@ import com.github.tix320.skimp.collection.map.mutable.MutableSortedBiMap;
 public abstract class ComparatorBasedBiMap<F, S> extends AbstractBiMap<F, S> implements MutableSortedBiMap<F, S> {
 
 	private final SortedMap<EntryImpl<F, S>, EntryImpl<F, S>> backingMap;
+	private final SortedMap<EntryImpl<F, S>, EntryImpl<F, S>> inverseBackingMap;
 
 	private final StraightView straightView;
 	private final InverseView inverseView;
 
-	protected ComparatorBasedBiMap(SortedMap<EntryImpl<F, S>, EntryImpl<F, S>> backingMap) {
-		this.backingMap = backingMap;
+	protected ComparatorBasedBiMap(Supplier<SortedMap<EntryImpl<F, S>, EntryImpl<F, S>>> backingMapFactory) {
+		this.backingMap = backingMapFactory.get();
+		this.inverseBackingMap = backingMapFactory.get();
 		this.straightView = new StraightView();
 		this.inverseView = new InverseView();
 	}
 
 	@Override
-	public int size() {
+	public final int size() {
 		return backingMap.size();
 	}
 
