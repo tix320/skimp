@@ -47,75 +47,85 @@ public class TracerExecutorServiceTest {
 		assertTrue(tracerExecutorService.isTerminated());
 	}
 
+	// TODO: rewrite with determinism
 	@Test
 	public void submitRunnable() throws InterruptedException {
 		List<Integer> items = new ArrayList<>();
 
-		tracerExecutorService.submit(() -> {
-			items.add(1);
-			tracerExecutorService.submit(() -> {
-				items.add(2);
-
+		Thread thread = new Thread("main") {
+			public void run() {
 				tracerExecutorService.submit(() -> {
-					items.add(3);
+					items.add(1);
+					tracerExecutorService.submit(() -> {
+						items.add(2);
 
-					RuntimeException runtimeException;
-					try {
-						boo();
-						throw new AssertionError();
-					} catch (RuntimeException e) {
-						runtimeException = e;
-					}
+						tracerExecutorService.submit(() -> {
+							items.add(3);
 
-					Tracer.INSTANCE.injectFullStacktrace(runtimeException);
+							RuntimeException runtimeException;
+							try {
+								boo();
+								throw new AssertionError();
+							} catch (RuntimeException e) {
+								runtimeException = e;
+							}
 
-					boolean containsSwitchFromMainToTestThread = Arrays.stream(runtimeException.getStackTrace())
-						.anyMatch(stackTraceElement -> stackTraceElement.getClassName()
-														   .matches(
-															   ".*Switching thread: Thread\\[#\\d+,main,5,main]") &&
-													   stackTraceElement.getMethodName()
-														   .matches(".*Thread\\[#\\d+,test\\d{1,2},5,main]"));
+							Tracer.INSTANCE.injectFullStacktrace(runtimeException);
 
-					boolean containsSwitchFromTestToAnotherTestThread = Arrays.stream(runtimeException.getStackTrace())
-						.anyMatch(stackTraceElement -> stackTraceElement.getClassName()
-														   .matches(
-															   ".*Switching thread: Thread\\[#\\d+,test\\d{1,2},5,main]") &&
-													   stackTraceElement.getMethodName()
-														   .matches(".*Thread\\[#\\d+,test\\d{1,2},5,main]"));
+							boolean containsSwitchFromMainToTestThread = Arrays.stream(runtimeException.getStackTrace())
+								.anyMatch(stackTraceElement -> stackTraceElement.getClassName()
+																   .matches(
+																	   ".*Switching thread: Thread\\[#\\d+,main,5,]") &&
+															   stackTraceElement.getMethodName()
+																   .matches(".*Thread\\[#\\d+,test\\d{1,2},5,main]"));
 
-					boolean containsExceptionStacktrace = Arrays.stream(runtimeException.getStackTrace())
-															  .anyMatch(
-																  stackTraceElement -> stackTraceElement.getClassName()
-																						   .matches(
-																							   ".*" +
-																							   TracerExecutorServiceTest.class.getName()) &&
-																					   stackTraceElement.getMethodName()
-																						   .equals("boo")) &&
-														  Arrays.stream(runtimeException.getStackTrace())
-															  .anyMatch(
-																  stackTraceElement -> stackTraceElement.getClassName()
-																						   .matches(
-																							   ".*" +
-																							   TracerExecutorServiceTest.class.getName()) &&
-																					   stackTraceElement.getMethodName()
-																						   .equals("doo"));
+							boolean containsSwitchFromTestToAnotherTestThread =
+								Arrays.stream(runtimeException.getStackTrace())
+									.anyMatch(stackTraceElement -> stackTraceElement.getClassName()
+																	   .matches(
+																		   ".*Switching thread: Thread\\[#\\d+,test\\d{1,2},5,main]") &&
+																   stackTraceElement.getMethodName()
+																	   .matches(
+																		   ".*Thread\\[#\\d+,test\\d{1,2},5,main]"));
 
-					if (containsSwitchFromMainToTestThread) {
-						items.add(4);
-					}
+							boolean containsExceptionStacktrace = Arrays.stream(runtimeException.getStackTrace())
+																	  .anyMatch(
+																		  stackTraceElement ->
+																			  stackTraceElement.getClassName()
+																				  .matches(
+																					  ".*" +
+																					  TracerExecutorServiceTest.class.getName()) &&
+																			  stackTraceElement.getMethodName()
+																				  .equals("boo")) &&
+																  Arrays.stream(runtimeException.getStackTrace())
+																	  .anyMatch(
+																		  stackTraceElement ->
+																			  stackTraceElement.getClassName()
+																				  .matches(
+																					  ".*" +
+																					  TracerExecutorServiceTest.class.getName()) &&
+																			  stackTraceElement.getMethodName()
+																				  .equals("doo"));
 
-					if (containsSwitchFromTestToAnotherTestThread) {
-						items.add(5);
-					}
+							if (containsSwitchFromMainToTestThread) {
+								items.add(4);
+							}
 
-					if (containsExceptionStacktrace) {
-						items.add(6);
-					}
+							if (containsSwitchFromTestToAnotherTestThread) {
+								items.add(5);
+							}
 
+							if (containsExceptionStacktrace) {
+								items.add(6);
+							}
+
+						});
+					});
 				});
-			});
-		});
+			}
+		};
 
+		thread.start();
 		Thread.sleep(3000);
 
 		assertEquals(List.of(1, 2, 3, 4, 5, 6), items);
