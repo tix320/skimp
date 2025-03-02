@@ -8,6 +8,4 @@ module com.github.tix.skimp {
 	exports com.github.tix320.skimp.thread.tracer;
 	exports com.github.tix320.skimp.interval;
 	exports com.github.tix320.skimp.collection.map;
-	exports com.github.tix320.skimp.collection.map.mutable;
-	exports com.github.tix320.skimp.collection.map.immutable;
 }
