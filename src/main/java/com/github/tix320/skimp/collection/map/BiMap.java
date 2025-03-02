@@ -1,27 +1,16 @@
 package com.github.tix320.skimp.collection.map;
 
-import java.util.Iterator;
-import java.util.Map;
-
-public interface BiMap<F, S> extends Iterable<BiMap.Entry<F, S>> {
+public interface BiMap<F, S> {
 
 	int size();
 
-	boolean isEmpty();
-
 	boolean contains(F key);
 
-	boolean inverseContains(S key);
+	boolean containsInverse(S key);
 
 	S get(F key);
 
-	F inverseGet(S key);
-
-	Map<F, S> view();
-
-	Map<S, F> inverseView();
-
-	Iterator<Entry<F, S>> iterator();
+	F getInverse(S key);
 
 	@Override
 	boolean equals(Object o);
@@ -40,5 +29,7 @@ public interface BiMap<F, S> extends Iterable<BiMap.Entry<F, S>> {
 
 		@Override
 		int hashCode();
+
 	}
+
 }

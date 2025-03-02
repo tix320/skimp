@@ -1,6 +1,4 @@
-package com.github.tix320.skimp.collection.map.mutable;
-
-import com.github.tix320.skimp.collection.map.BiMap;
+package com.github.tix320.skimp.collection.map;
 
 public interface MutableBiMap<F, S> extends BiMap<F, S> {
 
@@ -11,4 +9,5 @@ public interface MutableBiMap<F, S> extends BiMap<F, S> {
 	F removeInverse(S key);
 
 	void clear();
+
 }
